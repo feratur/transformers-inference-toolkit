@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "transformers-inference-toolkit"
+version = "0.1.0"
+description = "A collection of helper methods to simplify optimization and inference of Huggingface Transformers-based models"
+authors = ["Alexey Burlakov <feraturdev@gmail.com>"]
+license = "Apache-2.0"
+readme = "README.md"
+repository = "https://github.com/feratur/transformers-inference-toolkit"
+packages = [{include = "transformers_inference_toolkit"}]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+transformers = "^4.24.0"
+optimum = {extras = ["onnxruntime-gpu"], version = "^1.4.1"}
+torch = "^1.12"
+accelerate = "^0.14.0"
+
+
+[tool.poetry.group.dev.dependencies]
+flake8 = "^5.0.4"
+black = "^22.10.0"
+isort = "^5.10.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
