@@ -9,11 +9,12 @@ repository = "https://github.com/feratur/transformers-inference-toolkit"
 packages = [{include = "transformers_inference_toolkit"}]
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = ">=3.7,<3.11"
 transformers = "^4.24.0"
-optimum = {extras = ["onnxruntime-gpu"], version = "^1.4.1"}
 torch = "^1.12"
 accelerate = "^0.14.0"
+onnxruntime-gpu = "^1.13.1"
+onnx = "^1.12.0"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -24,3 +25,6 @@ isort = "^5.10.1"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.isort]
+profile = "black"

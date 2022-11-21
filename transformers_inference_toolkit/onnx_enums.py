@@ -3,7 +3,6 @@ from enum import Enum
 
 class OnnxModelType(str, Enum):
     BERT = "bert"
-    BART = "bart"
     GPT2 = "gpt2"
 
 
