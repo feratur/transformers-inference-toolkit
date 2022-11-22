@@ -1,12 +1,20 @@
 from typing import TYPE_CHECKING, Tuple, Type
 
-from transformers import AutoTokenizer
+from transformers import AutoConfig, AutoTokenizer
 from transformers.onnx import FeaturesManager
 
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from transformers import PreTrainedModel, PreTrainedTokenizerBase
+    from transformers import PretrainedConfig, PreTrainedModel, PreTrainedTokenizerBase
+
+
+def load_config(path: "Path") -> "PretrainedConfig":
+    return AutoConfig.from_pretrained(path.joinpath("model").as_posix())
+
+
+def load_tokenizer(path: "Path") -> "PreTrainedTokenizerBase":
+    return AutoTokenizer.from_pretrained(path.joinpath("tokenizer").as_posix())
 
 
 def load_pretrained(
@@ -18,7 +26,7 @@ def load_pretrained(
         feature=feature,
         framework="pt",
     )
-    tokenizer = AutoTokenizer.from_pretrained(path.joinpath("tokenizer").as_posix())
+    tokenizer = load_tokenizer(path)
     model_output = model_class.from_pretrained(
         path.joinpath("model").as_posix(),
         torch_dtype="auto",

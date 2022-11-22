@@ -5,7 +5,7 @@ from onnxruntime.transformers.fusion_options import FusionOptions
 from onnxruntime.transformers.optimizer import optimize_model
 from transformers.onnx import FeaturesManager, export
 
-from .onnx_enums import OnnxModelType, OnnxOptimizationLevel
+from .enums import OnnxModelType, OnnxOptimizationLevel
 
 if TYPE_CHECKING:
     from pathlib import Path

@@ -1,4 +1,4 @@
-from .onnx_enums import OnnxModelType, OnnxOptimizationLevel
-from .optimizer import Optimizer
+from .enums import ModelFormat, OnnxModelType, OnnxOptimizationLevel
+from .predictor import Predictor
 
-__all__ = ["Optimizer", "OnnxModelType", "OnnxOptimizationLevel"]
+__all__ = ["ModelFormat", "OnnxModelType", "OnnxOptimizationLevel", "Predictor"]
