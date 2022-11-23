@@ -1,4 +1,3 @@
-import json
 import shutil
 import tempfile
 from pathlib import Path
@@ -6,15 +5,46 @@ from typing import TYPE_CHECKING, Optional
 
 import torch
 
+from .deepspeed_utils import get_world_size, init_deepspeed_inference
 from .enums import ModelFormat, OnnxModelType, OnnxOptimizationLevel
 from .onnx_utils import export_to_onnx, get_onnx_session, optimize_onnx
-from .transformers_utils import load_pretrained
+from .transformers_utils import load_pretrained, save_pretrained
 
 if TYPE_CHECKING:
     from transformers.onnx.config import OnnxConfig
 
 
-def pack_transformers_model(
+def pack_deepspeed(
+    input_path: str,
+    output_path: str,
+    feature: str = "default",
+    dtype: Optional[torch.dtype] = None,
+    replace_with_kernel_inject: bool = True,
+    tensor_parallel: Optional[int] = None,
+    enable_cuda_graph: bool = False,
+    replace_method: str = "auto",
+):
+    tokenizer, model = load_pretrained(Path(input_path), feature)
+    ds_inference_config = dict(
+        dtype=(model.dtype if dtype is None else dtype),
+        replace_with_kernel_inject=replace_with_kernel_inject,
+        tensor_parallel=(
+            get_world_size() if tensor_parallel is None else tensor_parallel
+        ),
+        enable_cuda_graph=enable_cuda_graph,
+        replace_method=replace_method,
+    )
+    init_deepspeed_inference(model, **ds_inference_config)
+    out_path = Path(output_path)
+    metadata = dict(
+        format=ModelFormat.DEEPSPEED.value,
+        feature=feature,
+        deepspeed_inference_config=ds_inference_config,
+    )
+    save_pretrained(out_path, metadata, tokenizer, model)
+
+
+def pack_transformers(
     input_path: str,
     output_path: str,
     feature: str = "default",
@@ -24,19 +54,15 @@ def pack_transformers_model(
     if force_fp16:
         model = model.half()
     out_path = Path(output_path)
-    out_path.mkdir(parents=True, exist_ok=True)
-    tokenizer.save_pretrained(out_path.joinpath("tokenizer").as_posix())
-    model.save_pretrained(out_path.joinpath("model").as_posix())
     metadata = dict(
         format=ModelFormat.TRANSFORMERS.value,
         feature=feature,
         force_fp16=force_fp16,
     )
-    with out_path.joinpath("metadata.json").open(mode="w") as meta_file:
-        json.dump(metadata, meta_file, indent=4)
+    save_pretrained(out_path, metadata, tokenizer, model)
 
 
-def convert_to_onnx(
+def pack_onnx(
     input_path: str,
     output_path: str,
     feature: str = "default",
@@ -75,7 +101,6 @@ def convert_to_onnx(
         out_path = Path(output_path)
         model_dir_path = out_path.joinpath("model")
         model_dir_path.mkdir(parents=True, exist_ok=True)
-        tokenizer.save_pretrained(out_path.joinpath("tokenizer").as_posix())
         model_file_path = model_dir_path.joinpath("model.onnx")
         onnx_model_path.rename(model_file_path)
         config_file = pretrained_input_path.joinpath("model/config.json")
@@ -96,5 +121,4 @@ def convert_to_onnx(
         optimization_level=optimization_level.value,
         custom_onnx_config_used=bool(custom_onnx_config),
     )
-    with out_path.joinpath("metadata.json").open(mode="w") as meta_file:
-        json.dump(metadata, meta_file, indent=4)
+    save_pretrained(out_path, metadata, tokenizer)

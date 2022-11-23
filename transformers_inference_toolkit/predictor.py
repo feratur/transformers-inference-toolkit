@@ -4,6 +4,7 @@ from typing import Optional
 
 import torch
 
+from .deepspeed_utils import init_deepspeed_inference
 from .enums import ModelFormat
 from .onnx_utils import get_onnx_session
 from .transformers_utils import load_config, load_pretrained, load_tokenizer
@@ -32,5 +33,13 @@ class Predictor:
                 path=path_obj,
                 feature=self.metadata["feature"],
             )
-            if self.cuda:
-                self.model = self.model.cuda()
+            if self.model_format == ModelFormat.TRANSFORMERS:
+                if self.cuda:
+                    self.model = self.model.cuda()
+            elif self.model_format == ModelFormat.DEEPSPEED:
+                self.model = init_deepspeed_inference(
+                    model=self.model,
+                    **self.metadata["deepspeed_inference_config"],
+                )
+            else:
+                raise ValueError("Unknown model format")

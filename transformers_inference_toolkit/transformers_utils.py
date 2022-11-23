@@ -1,4 +1,5 @@
-from typing import TYPE_CHECKING, Tuple, Type
+import json
+from typing import TYPE_CHECKING, Any, Optional, Tuple, Type
 
 from transformers import AutoConfig, AutoTokenizer
 from transformers.onnx import FeaturesManager
@@ -37,3 +38,18 @@ def load_pretrained(
     else:
         model = model_output
     return tokenizer, model
+
+
+def save_pretrained(
+    path: "Path",
+    metadata: Any,
+    tokenizer: Optional["PreTrainedTokenizerBase"] = None,
+    model: Optional["PreTrainedModel"] = None,
+):
+    path.mkdir(parents=True, exist_ok=True)
+    if tokenizer:
+        tokenizer.save_pretrained(path.joinpath("tokenizer").as_posix())
+    if model:
+        model.save_pretrained(path.joinpath("model").as_posix())
+    with path.joinpath("metadata.json").open(mode="w") as meta_file:
+        json.dump(metadata, meta_file, indent=4)
