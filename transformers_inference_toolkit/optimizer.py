@@ -20,17 +20,15 @@ def pack_deepspeed(
     feature: str = "default",
     dtype: Optional[torch.dtype] = None,
     replace_with_kernel_inject: bool = True,
-    tensor_parallel: Optional[int] = None,
+    mp_size: Optional[int] = None,
     enable_cuda_graph: bool = False,
     replace_method: str = "auto",
 ):
     tokenizer, model = load_pretrained(Path(input_path), feature)
     ds_inference_config = dict(
-        dtype=(model.dtype if dtype is None else dtype),
+        dtype=str(model.dtype if dtype is None else dtype),
         replace_with_kernel_inject=replace_with_kernel_inject,
-        tensor_parallel=(
-            get_world_size() if tensor_parallel is None else tensor_parallel
-        ),
+        mp_size=(get_world_size() if mp_size is None else mp_size),
         enable_cuda_graph=enable_cuda_graph,
         replace_method=replace_method,
     )
