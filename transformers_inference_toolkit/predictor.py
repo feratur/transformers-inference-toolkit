@@ -1,6 +1,6 @@
 import json
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any, List, Optional
 
 import torch
 
@@ -84,6 +84,22 @@ class Predictor:
             }
         with torch.no_grad():
             return self.model(**model_input.to(self.device), **kwargs)
+
+    def generate(
+        self,
+        prompt: str,
+        skip_special_tokens: bool = True,
+        clean_up_tokenization_spaces: bool = True,
+        **kwargs,
+    ) -> List[str]:
+        model_input = self.tokenize(prompt, padding=False).to(self.device)
+        with torch.no_grad():
+            model_output = self.model.generate(**model_input, **kwargs)
+        return self.tokenizer.batch_decode(
+            sequences=model_output,
+            skip_special_tokens=skip_special_tokens,
+            clean_up_tokenization_spaces=clean_up_tokenization_spaces,
+        )
 
     def __call__(self, *args, **kwargs) -> Any:
         return self.predict(self.tokenize(*args, **kwargs))
