@@ -13,6 +13,8 @@ if TYPE_CHECKING:
     from transformers import PretrainedConfig, PreTrainedModel, PreTrainedTokenizerBase
     from transformers.onnx.config import OnnxConfig
 
+ONNX_MODEL_FILE = "model.onnx"
+
 
 def export_to_onnx(
     model: "PreTrainedModel",
@@ -30,7 +32,7 @@ def export_to_onnx(
             feature=feature,
         )
         onnx_config: "OnnxConfig" = model_onnx_config(model.config)
-    model_path = output_path.joinpath("model.onnx")
+    model_path = output_path.joinpath(ONNX_MODEL_FILE)
     export(
         preprocessor=tokenizer,  # type: ignore
         model=model,
@@ -75,7 +77,7 @@ def optimize_onnx(
     )
     if fp16:
         optimizer.convert_float_to_float16(keep_io_types=True)
-    opt_model_path = output_path.joinpath("model.onnx")
+    opt_model_path = output_path.joinpath(ONNX_MODEL_FILE)
     optimizer.save_model_to_file(opt_model_path.as_posix())
     return opt_model_path
 

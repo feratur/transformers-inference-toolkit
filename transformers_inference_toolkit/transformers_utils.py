@@ -9,6 +9,8 @@ if TYPE_CHECKING:
 
     from transformers import PretrainedConfig, PreTrainedModel, PreTrainedTokenizerBase
 
+METADATA_FILE = "metadata.json"
+
 
 def load_config(path: "Path") -> "PretrainedConfig":
     return AutoConfig.from_pretrained(path.joinpath("model").as_posix())
@@ -51,5 +53,5 @@ def save_pretrained(
         tokenizer.save_pretrained(path.joinpath("tokenizer").as_posix())
     if model:
         model.save_pretrained(path.joinpath("model").as_posix())
-    with path.joinpath("metadata.json").open(mode="w") as meta_file:
+    with path.joinpath(METADATA_FILE).open(mode="w") as meta_file:
         json.dump(metadata, meta_file, indent=4)
