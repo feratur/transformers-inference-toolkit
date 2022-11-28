@@ -13,9 +13,9 @@ The original 🤗 Transformers library includes `transformers.onnx` package, whi
 Aside from ONNX conversion the Toolkit also supports resaving PyTorch models with half-precision and setting up [DeepSpeed Inference](https://www.deepspeed.ai/tutorials/inference-tutorial/).
 
 ### Prerequisite
-The Toolkit expects your pretrained model (in PyTorch format) and tokenizer to be saved (using `save_pretrained()` method) inside a common parent directory in `model` and `tokenizer` folders respectively. This is how a file structure of `bert-semantic` model should look like:
+The Toolkit expects your pretrained model (in PyTorch format) and tokenizer to be saved (using `save_pretrained()` method) inside a common parent directory in `model` and `tokenizer` folders respectively. This is how a file structure of `toxic-bert` model should look like:
 ```bash
-bert-semantic
+toxic-bert
 ├── model
 │   ├── config.json
 │   └── pytorch_model.bin
