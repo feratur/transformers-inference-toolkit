@@ -39,7 +39,7 @@ def load_pretrained(
         model = model_output[0]
     else:
         model = model_output
-    return tokenizer, model
+    return tokenizer, model.eval()
 
 
 def save_pretrained(
