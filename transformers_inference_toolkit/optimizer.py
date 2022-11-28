@@ -1,7 +1,7 @@
 import shutil
 import tempfile
 from pathlib import Path
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Optional, Type
 
 import torch
 
@@ -47,7 +47,7 @@ def pack_transformers(
     input_path: str,
     output_path: str,
     feature: Feature = Feature.DEFAULT,
-    force_fp16: bool = True,
+    force_fp16: bool = False,
 ):
     feature_str = str(feature.value)
     tokenizer, model = load_pretrained(Path(input_path), feature_str)
@@ -70,7 +70,7 @@ def pack_onnx(
     for_gpu: bool = True,
     fp16: bool = True,
     optimization_level: OnnxOptimizationLevel = OnnxOptimizationLevel.FULL,
-    custom_onnx_config: Optional["OnnxConfig"] = None,
+    custom_onnx_config_cls: Optional[Type["OnnxConfig"]] = None,
 ):
     feature_str = str(feature.value)
     pretrained_input_path = Path(input_path)
@@ -85,7 +85,10 @@ def pack_onnx(
             output_path=tempdir_path,
             feature=feature_str,
             for_gpu=for_gpu,
-            custom_onnx_config=custom_onnx_config,
+            custom_onnx_config=(
+                custom_onnx_config_cls
+                and custom_onnx_config_cls(model.config, feature_str)
+            ),
         )
         if optimization_level != OnnxOptimizationLevel.NONE:
             opt_dir_path = tempdir_path.joinpath("optimized")
@@ -120,6 +123,6 @@ def pack_onnx(
         for_gpu=for_gpu,
         fp16=fp16,
         optimization_level=optimization_level.value,
-        custom_onnx_config_used=bool(custom_onnx_config),
+        custom_onnx_config_used=bool(custom_onnx_config_cls),
     )
     save_pretrained(out_path, metadata, tokenizer)
