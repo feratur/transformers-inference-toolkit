@@ -1,5 +1,5 @@
 # Transformers Inference Toolkit
-🤗 [Transformers](https://github.com/huggingface/transformers) library provides great API for manipulating pre-trained NLP (as well as CV and Audio-related) models. However, preparing 🤗 Transformers models for use in production usually requires additional effort. The purpose of `transformers-inference-toolkit` is to simplify automatic optimization and inference process of Huggingface Transformers-based models.
+🤗 [Transformers](https://github.com/huggingface/transformers) library provides great API for manipulating pre-trained NLP (as well as CV and Audio-related) models. However, preparing 🤗 Transformers models for use in production usually requires additional effort. The purpose of `transformers-inference-toolkit` is to get rid of boilerplate code and to simplify automatic optimization and inference process of Huggingface Transformers-based models.
 
 ## Installation
 Using `pip`:
