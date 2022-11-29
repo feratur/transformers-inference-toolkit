@@ -14,6 +14,8 @@ if TYPE_CHECKING:
     from transformers.onnx.config import OnnxConfig
 
 ONNX_MODEL_FILE = "model.onnx"
+CPU_PROVIDER = "CPUExecutionProvider"
+CUDA_PROVIDER = "CUDAExecutionProvider"
 
 
 def export_to_onnx(
@@ -82,8 +84,13 @@ def optimize_onnx(
     return opt_model_path
 
 
+def get_cuda_device_idx(session: InferenceSession) -> Optional[int]:
+    cuda_provider = session.get_provider_options().get(CUDA_PROVIDER)
+    if not cuda_provider:
+        return None
+    return int(cuda_provider["device_id"])
+
+
 def get_onnx_session(model_path: "Path", cuda: bool = True) -> InferenceSession:
-    provider = "CPUExecutionProvider"
-    if cuda:
-        provider = "CUDAExecutionProvider"
+    provider = CUDA_PROVIDER if cuda else CPU_PROVIDER
     return InferenceSession(model_path.as_posix(), providers=[provider])

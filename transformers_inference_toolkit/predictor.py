@@ -6,7 +6,7 @@ import torch
 
 from .deepspeed_utils import init_deepspeed_inference
 from .enums import ModelFormat
-from .onnx_utils import ONNX_MODEL_FILE, get_onnx_session
+from .onnx_utils import ONNX_MODEL_FILE, get_cuda_device_idx, get_onnx_session
 from .transformers_utils import (
     METADATA_FILE,
     load_config,
@@ -34,11 +34,11 @@ class Predictor:
                 model_path=path_obj.joinpath(f"model/{ONNX_MODEL_FILE}"),
                 cuda=cuda,
             )
-            cuda_prov = self.model.get_provider_options().get("CUDAExecutionProvider")
+            device_idx = get_cuda_device_idx(self.model)
             self.device = (
-                torch.device(f"cuda:{cuda_prov['device_id']}")
-                if cuda_prov
-                else torch.device("cpu")
+                torch.device("cpu")
+                if device_idx is None
+                else torch.device(f"cuda:{device_idx}")
             )
         else:
             self.tokenizer, self.model = load_pretrained(

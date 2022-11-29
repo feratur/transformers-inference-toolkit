@@ -22,7 +22,6 @@ def pack_deepspeed(
     replace_with_kernel_inject: bool = True,
     mp_size: Optional[int] = None,
     enable_cuda_graph: bool = False,
-    replace_method: str = "auto",
 ):
     feature_str = str(feature.value)
     tokenizer, model = load_pretrained(Path(input_path), feature_str)
@@ -31,7 +30,7 @@ def pack_deepspeed(
         replace_with_kernel_inject=replace_with_kernel_inject,
         mp_size=(get_world_size() if mp_size is None else mp_size),
         enable_cuda_graph=enable_cuda_graph,
-        replace_method=replace_method,
+        replace_method="auto",
     )
     out_path = Path(output_path)
     metadata = dict(
