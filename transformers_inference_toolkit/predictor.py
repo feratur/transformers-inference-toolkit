@@ -26,13 +26,12 @@ class Predictor:
             self.metadata = json.load(meta_file)
         self.config = load_config(path_obj)
         self.model_format = ModelFormat(self.metadata["format"])
-        if cuda is None:
-            cuda = torch.cuda.is_available() and torch.cuda.device_count() > 0
+        cuda_available = torch.cuda.is_available() and torch.cuda.device_count() > 0
         if self.model_format == ModelFormat.ONNX:
             self.tokenizer = load_tokenizer(path_obj)
             self.model = get_onnx_session(
                 model_path=path_obj.joinpath(f"model/{ONNX_MODEL_FILE}"),
-                cuda=cuda,
+                cuda=(self.metadata["for_gpu"] if cuda is None else cuda_available),
             )
             device_idx = get_cuda_device_idx(self.model)
             self.device = (
@@ -46,7 +45,7 @@ class Predictor:
                 feature=self.metadata["feature"],
             )
             if self.model_format == ModelFormat.TRANSFORMERS:
-                if cuda:
+                if cuda is None and cuda_available or cuda:
                     self.model = self.model.cuda()
                 self.device = self.model.device
             elif self.model_format == ModelFormat.DEEPSPEED:
