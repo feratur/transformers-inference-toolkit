@@ -79,7 +79,7 @@ class Predictor:
                 **kwargs,
             )
             return {
-                out_name: out_value
+                out_name: torch.from_numpy(out_value)
                 for out_name, out_value in zip(self.metadata["model_outputs"], outputs)
             }
         with torch.no_grad():
