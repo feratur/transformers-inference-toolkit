@@ -1,5 +1,5 @@
 import os
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 import deepspeed
 import torch
@@ -27,7 +27,13 @@ def get_world_size() -> int:
 def init_deepspeed_inference(
     model: "PreTrainedModel",
     dtype: str,
+    mp_size: Optional[int] = None,
     **kwargs,
 ) -> "InferenceEngine":
     model = model.cuda(get_local_rank())
-    return deepspeed.init_inference(model, dtype=TORCH_DTYPE_MAPPING[dtype], **kwargs)
+    return deepspeed.init_inference(
+        model=model,
+        dtype=TORCH_DTYPE_MAPPING[dtype],
+        mp_size=(get_world_size() if mp_size is None else mp_size),
+        **kwargs,
+    )

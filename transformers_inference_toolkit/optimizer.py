@@ -23,6 +23,23 @@ def pack_deepspeed(
     mp_size: Optional[int] = None,
     enable_cuda_graph: bool = False,
 ):
+    """
+    Save the model and tokenizer for DeepSpeed Inference.
+
+    :param input_path: Path to the folder containing "model" and
+        "tokenizer" directories.
+    :param output_path: Path where to save the model and tokenizer package.
+    :param feature: The type of specific inference task.
+    :param dtype: Desired model data type (leave at None to use model's
+        original dtype).
+    :param replace_with_kernel_inject: Set to True to inject inference kernels
+        for supported models.
+    :param mp_size: Desired model parallel size, value 1 meaning no model
+        parallelism (leave at None to use all available GPUs).
+    :param enable_cuda_graph: The flag for capturing the CUDA-Graph of the
+        inference ops.
+    :return: None.
+    """
     feature_str = str(feature.value)
     tokenizer, model = load_pretrained(Path(input_path), feature_str)
     ds_inference_config = dict(

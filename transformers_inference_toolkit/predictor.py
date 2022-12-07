@@ -57,16 +57,25 @@ class Predictor:
             else:
                 raise ValueError("Unknown model format")
 
-    def tokenize(self, *args, **kwargs) -> "BatchEncoding":
-        if "return_tensors" not in kwargs:
-            kwargs["return_tensors"] = (
-                "np" if self.model_format == ModelFormat.ONNX else "pt"
-            )
-        if "padding" not in kwargs:
-            kwargs["padding"] = True
-        if "truncation" not in kwargs:
-            kwargs["truncation"] = True
-        return self.tokenizer(*args, **kwargs)
+    def tokenize(
+        self,
+        *args,
+        return_tensors: Optional[str] = None,
+        padding: bool = True,
+        truncation: bool = True,
+        **kwargs,
+    ) -> "BatchEncoding":
+        return self.tokenizer(
+            *args,
+            return_tensors=(
+                return_tensors
+                if return_tensors
+                else ("np" if self.model_format == ModelFormat.ONNX else "pt")
+            ),
+            padding=padding,
+            truncation=truncation,
+            **kwargs,
+        )
 
     def predict(self, model_input: "BatchEncoding", **kwargs) -> Any:
         if self.model_format == ModelFormat.ONNX:
