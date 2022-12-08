@@ -65,6 +65,16 @@ def pack_transformers(
     feature: Feature = Feature.DEFAULT,
     force_fp16: bool = False,
 ):
+    """
+    Save the model and tokenizer without applying any optimizations.
+
+    :param input_path: Path to the folder containing "model" and
+        "tokenizer" directories.
+    :param output_path: Path where to save the model and tokenizer package.
+    :param feature: The type of specific inference task.
+    :param force_fp16: True to save the model in half-precision.
+    :return: None.
+    """
     feature_str = str(feature.value)
     tokenizer, model = load_pretrained(Path(input_path), feature_str)
     if force_fp16:
@@ -88,6 +98,24 @@ def pack_onnx(
     optimization_level: OnnxOptimizationLevel = OnnxOptimizationLevel.FULL,
     custom_onnx_config_cls: Optional[Type["OnnxConfig"]] = None,
 ):
+    """
+    Export to ONNX format (optionally with ONNX optimization).
+
+    :param input_path: Path to the folder containing "model" and
+        "tokenizer" directories.
+    :param output_path: Path where to save the model and tokenizer package.
+    :param feature: The type of specific inference task.
+    :param model_type: Basic type of Transformer model architecture
+        (only needed for optimization).
+    :param for_gpu: True if the inference will be performed on GPU.
+    :param fp16: True to use half-precision.
+    :param optimization_level: ONNX optimization level
+        (NONE to skip optimization, FULL uses hardware-dependent optimizations).
+    :param custom_onnx_config_cls: If the ONNX conversion is not
+        supported for some particular model by the Transformers
+        library a custom OnnxConfig class can be provided.
+    :return: None.
+    """
     feature_str = str(feature.value)
     pretrained_input_path = Path(input_path)
     tokenizer, model = load_pretrained(pretrained_input_path, feature_str)
