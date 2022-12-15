@@ -19,7 +19,20 @@ if TYPE_CHECKING:
 
 
 class Predictor:
+    """
+    An inference-targeted wrapper around a packaged model
+    (after calling one of the methods from the "optimizer" module).
+    """
+
     def __init__(self, path: str, cuda: Optional[bool] = None):
+        """
+        Initialize the Predictor using a model+tokenizer package.
+
+        :param path: Path to the folder containing "metadata.json" and
+            "model" and "tokenizer" directories.
+        :param cuda: True to place the model on GPU, None to use the value
+            the model was packaged with.
+        """
         path_obj = Path(path)
         self.path = path_obj.as_posix()
         with path_obj.joinpath(METADATA_FILE).open(mode="r") as meta_file:
@@ -65,6 +78,17 @@ class Predictor:
         truncation: bool = True,
         **kwargs,
     ) -> "BatchEncoding":
+        """
+        Batch-tokenize the input values.
+
+        :param args: Positional arguments to the pretrained tokenizer.
+        :param return_tensors: Return the tokenized values in the specified format;
+            if None - use the format that is required by the model.
+        :param padding: Activates and controls padding.
+        :param truncation: Activates and controls truncation.
+        :param kwargs: Keyword arguments to the pretrained tokenizer.
+        :return: BatchEncoding object.
+        """
         return self.tokenizer(
             *args,
             return_tensors=(
