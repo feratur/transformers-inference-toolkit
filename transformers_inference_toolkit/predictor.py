@@ -102,6 +102,13 @@ class Predictor:
         )
 
     def predict(self, model_input: "BatchEncoding", **kwargs) -> Any:
+        """
+        Forward pass of the underlying model.
+
+        :param model_input: Tokenized batch of input data (BatchEncoding object).
+        :param kwargs: Keyword arguments to the model's forward pass.
+        :return: Model's output.
+        """
         if self.model_format == ModelFormat.ONNX:
             outputs = self.model.run(
                 None,
@@ -124,6 +131,18 @@ class Predictor:
         clean_up_tokenization_spaces: bool = True,
         **kwargs,
     ) -> List[str]:
+        """
+        Generate sequences of token ids for models with a language modeling head.
+
+        :param prompt: The sequence used as a prompt for the generation or as model
+            inputs to the encoder.
+        :param skip_special_tokens: Whether or not to remove special tokens in
+            the decoding.
+        :param clean_up_tokenization_spaces: Whether or not to clean up the
+            tokenization spaces.
+        :param kwargs: Keyword arguments to the model's generate() method.
+        :return: The list of generated and decoded sentences.
+        """
         model_input = self.tokenize(prompt, padding=False).to(self.device)
         with torch.no_grad():
             model_output = self.model.generate(**model_input, **kwargs)
@@ -134,4 +153,11 @@ class Predictor:
         )
 
     def __call__(self, *args, **kwargs) -> Any:
+        """
+        Tokenize the inputs and perform the model's forward pass.
+
+        :param args: Positional arguments to the tokenizer.
+        :param kwargs: Keyword arguments to the tokenizer.
+        :return: Model's output.
+        """
         return self.predict(self.tokenize(*args, **kwargs))
