@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "transformers-inference-toolkit"
-version = "0.1.0"
+version = "0.1.1"
 description = "A collection of helper methods to simplify optimization and inference of Huggingface Transformers-based models"
 authors = ["Alexey Burlakov <feraturdev@gmail.com>"]
 license = "Apache-2.0"
