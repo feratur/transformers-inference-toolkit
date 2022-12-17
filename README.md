@@ -1,4 +1,7 @@
 # Transformers Inference Toolkit
+[![PyPI](https://img.shields.io/pypi/v/transformers-inference-toolkit)](https://pypi.org/project/transformers-inference-toolkit/)
+[![](https://img.shields.io/badge/%E2%96%BA-%20Changelog-blue)](https://github.com/feratur/transformers-inference-toolkit/blob/main/CHANGELOG.md)
+
 🤗 [Transformers](https://github.com/huggingface/transformers) library provides great API for manipulating pre-trained NLP (as well as CV and Audio-related) models. However, preparing 🤗 Transformers models for use in production usually requires additional effort. The purpose of `transformers-inference-toolkit` is to get rid of boilerplate code and to simplify automatic optimization and inference process of Huggingface Transformers models.
 
 ## Installation
